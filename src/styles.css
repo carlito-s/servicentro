@@ -1,1 +1,232 @@
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
+@theme {
+  /* Colors: Fuel & Friction */
+  --color-primary: #ffe792;
+  --color-primary-container: #ffd709;
+  --color-primary-dim: #efc900;
+  --color-on-primary: #655400;
+  --color-on-primary-container: #5b4b00;
+
+  --color-secondary: #ff734c;
+  --color-secondary-container: #b12d00;
+  --color-secondary-dim: #ff734c;
+  --color-on-secondary: #430b00;
+  --color-on-secondary-container: #fff6f4;
+
+  /* Surface Hierarchy */
+  --color-surface-dim: #0e0e0e;
+  --color-surface: #0e0e0e;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #131313;
+  --color-surface-container: #191a1a;
+  --color-surface-container-high: #1f2020;
+  --color-surface-container-highest: #262626;
+  --color-surface-bright: #2c2c2c;
+
+  /* On Colors */
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #adaaaa;
+  --color-on-background: #ffffff;
+  --color-on-error: #490006;
+
+  /* Utilities */
+  --color-outline: #767575;
+  --color-outline-variant: #484848;
+  --color-error: #ff716c;
+  --color-error-container: #9f0519;
+
+  /* Typography */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-label: 'Space Grotesk', sans-serif;
+
+  /* Border Radius - Sharp (No rounded above 8px) */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius DEFAULT: 4px;
+  --radius-lg: 8px;
+  --radius-full: 12px;
+}
+
+html {
+  font-family: var(--font-body);
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+}
+
+/* Typography Utilities */
+.font-headline {
+  font-family: var(--font-headline);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-label {
+  font-family: var(--font-label);
+}
+
+/* Asphalt Texture - Applied globally */
+.asphalt-texture {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* "No-Line" Rule - No 1px borders for sectioning */
+/* Use background color shifts instead */
+
+/* Button Styles - Ignition System */
+.btn-primary {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  font-family: var(--font-headline);
+  font-weight: 900;
+  padding: 1rem 1.5rem;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 150ms ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-headline);
+  font-weight: 700;
+  padding: 1rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 150ms ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface);
+}
+
+/* Input Fields - Bottom-heavy style */
+.input-field {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-outline-variant);
+  padding: 0.5rem 0;
+  color: var(--color-on-surface);
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  transition: all 300ms ease;
+  width: 100%;
+}
+
+.input-field::placeholder {
+  color: var(--color-surface-variant);
+}
+
+.input-field:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+/* Card Styles - No divider lines, use spacing or color shifts */
+.card {
+  background-color: var(--color-surface-container);
+  padding: 1.5rem;
+}
+
+.card-elevated {
+  background-color: var(--color-surface-container-highest);
+}
+
+/* Status Badges */
+.badge-active {
+  background-color: rgba(255, 231, 146, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(255, 231, 146, 0.2);
+}
+
+.badge-cancelled {
+  background-color: rgba(255, 115, 76, 0.1);
+  color: var(--color-secondary);
+  border: 1px solid rgba(255, 115, 76, 0.2);
+}
+
+.badge-completed {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-on-surface-variant);
+}
+
+.badge-pending {
+  background-color: rgba(255, 231, 146, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(255, 231, 146, 0.2);
+}
+
+.badge-dispatched {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Metallic Shine Effect for Primary Buttons */
+.metallic-shine {
+  background: linear-gradient(135deg, #ffd709 0%, #ffe792 50%, #ffd709 100%);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 4px 15px rgba(255, 215, 9, 0.4);
+}
+
+/* Ghost Border Fallback */
+.ghost-border {
+  border: 1px solid rgba(72, 72, 72, 0.15);
+}
+
+/* Glassmorphism for overlays */
+.glass-panel {
+  background: rgba(25, 26, 26, 0.6);
+  backdrop-filter: blur(20px);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-dim);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-variant);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary-container);
+}

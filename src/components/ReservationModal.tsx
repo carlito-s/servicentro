@@ -38,73 +38,104 @@ export function ReservationModal({ turn, availableCapacity, onClose, onSuccess }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Reservar Turno</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
-            &times;
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-surface-container-lowest/80 backdrop-blur-sm">
+      <div className="asphalt-texture absolute inset-0"></div>
+      
+      <div className="relative w-full max-w-lg bg-surface border-t-4 border-primary shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="flex justify-between items-center p-6 bg-surface-container-high">
+          <h2 className="font-headline font-black text-2xl tracking-tighter uppercase italic">
+            RESERVAR TURNO
+          </h2>
+          <button 
+            onClick={onClose} 
+            className="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-secondary transition-colors duration-150"
+          >
+            <span className="material-symbols-outlined text-3xl">close</span>
           </button>
         </div>
 
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>Fecha:</strong> {turn.date}
-          </p>
-          <p className="text-sm text-blue-800">
-            <strong>Horario:</strong> {turn.startTime} - {turn.endTime}
-          </p>
-          <p className="text-sm text-blue-800">
-            <strong>Cupos disponibles:</strong> {availableCapacity}
-          </p>
+        <div className="px-6 py-8 grid grid-cols-2 gap-4 border-b border-outline-variant/20">
+          <div className="space-y-1">
+            <p className="font-label text-[10px] text-primary uppercase font-bold tracking-widest">Fecha del Turno</p>
+            <p className="font-headline text-xl font-bold uppercase">
+              {new Date(turn.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-label text-[10px] text-primary uppercase font-bold tracking-widest">Horario</p>
+            <p className="font-headline text-xl font-bold">{turn.startTime} - {turn.endTime}</p>
+          </div>
+          <div className="col-span-2 pt-2">
+            <div className="flex items-center gap-3 bg-surface-container-low p-4">
+              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: 'FILL 1' }}>event_available</span>
+              <div>
+                <p className="font-headline font-black text-lg leading-none">
+                  {availableCapacity} Libres
+                </p>
+                <p className="font-body text-xs text-on-surface-variant uppercase tracking-tighter">
+                  Cupos disponibles para este bloque
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-            {error}
+          <div className="px-6 pt-6">
+            <div className="p-3 bg-error/10 border border-error/20 text-error text-sm">
+              {error}
+            </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre completo</label>
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="relative group">
+            <label className="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 group-focus-within:text-primary transition-colors">
+              Nombre completo
+            </label>
             <input
               type="text"
               value={formData.clientName}
               onChange={e => setFormData({ ...formData, clientName: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ingrese su nombre"
+              className="input-field"
+              placeholder="EJ. JUAN PÉREZ"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Carné de identidad</label>
+          <div className="relative group">
+            <label className="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 group-focus-within:text-primary transition-colors">
+              Carné de identidad (CI)
+            </label>
             <input
               type="text"
               value={formData.idCard}
               onChange={e => setFormData({ ...formData, idCard: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ingrese su carné"
+              className="input-field"
+              placeholder="00000000"
               required
             />
           </div>
-          <div className="flex gap-2 pt-2">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6">
             <button
               type="submit"
               disabled={loading || availableCapacity <= 0}
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="metallic-shine text-on-primary-container font-headline font-black text-sm uppercase tracking-widest hover:bg-secondary transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Reservando...' : 'Confirmar Reserva'}
+              <span className="material-symbols-outlined text-lg">arrow_forward</span>
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
+              className="btn-secondary"
             >
               Cancelar
             </button>
           </div>
         </form>
+
+        <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
       </div>
     </div>
   )
