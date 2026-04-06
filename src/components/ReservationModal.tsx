@@ -15,8 +15,40 @@ export function ReservationModal({ turn, availableCapacity, onClose, onSuccess }
     clientName: '',
     idCard: '',
   })
+  const [errors, setErrors] = useState({
+    clientName: '',
+    idCard: '',
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  
+  const validateField = (field: keyof typeof formData, value: string): string => {
+    const trimmedValue = value.trim()
+    
+    switch (field) {
+      case 'clientName':
+        if (!trimmedValue) return 'El nombre es requerido'
+        if (trimmedValue.length < 3) return 'El nombre debe tener al menos 3 caracteres'
+        if (trimmedValue.length > 100) return 'El nombre no puede exceder 100 caracteres'
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/.test(trimmedValue)) return 'El nombre solo puede contener letras, espacios, acentos y puntos'
+        return ''
+        
+      case 'idCard':
+        if (!trimmedValue) return 'El carné es requerido'
+        if (!/^\d{11}$/.test(trimmedValue)) return 'El carné debe tener exactamente 11 dígitos'
+        if (trimmedValue === '00000000000') return 'El carné no puede ser todo ceros'
+        return ''
+        
+      default:
+        return ''
+    }
+  }
+  
+  const handleChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    const fieldError = validateField(field, value)
+    setErrors(prev => ({ ...prev, [field]: fieldError }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -96,11 +128,14 @@ export function ReservationModal({ turn, availableCapacity, onClose, onSuccess }
             <input
               type="text"
               value={formData.clientName}
-              onChange={e => setFormData({ ...formData, clientName: e.target.value })}
-              className="input-field"
+              onChange={e => handleChange('clientName', e.target.value)}
+              className={`input-field ${errors.clientName ? 'border-error' : ''}`}
               placeholder="EJ. JUAN PÉREZ"
               required
             />
+            {errors.clientName && (
+              <p className="text-error text-xs mt-1">{errors.clientName}</p>
+            )}
           </div>
           <div className="relative group">
             <label className="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 group-focus-within:text-primary transition-colors">
@@ -109,11 +144,15 @@ export function ReservationModal({ turn, availableCapacity, onClose, onSuccess }
             <input
               type="text"
               value={formData.idCard}
-              onChange={e => setFormData({ ...formData, idCard: e.target.value })}
-              className="input-field"
-              placeholder="00000000"
+              onChange={e => handleChange('idCard', e.target.value)}
+              className={`input-field ${errors.idCard ? 'border-error' : ''}`}
+              placeholder="00000000000"
+              maxLength={11}
               required
             />
+            {errors.idCard && (
+              <p className="text-error text-xs mt-1">{errors.idCard}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6">
@@ -123,8 +162,7 @@ export function ReservationModal({ turn, availableCapacity, onClose, onSuccess }
               className="metallic-shine text-on-primary-container font-headline font-black text-sm uppercase tracking-widest hover:bg-secondary transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Reservando...' : 'Confirmar Reserva'}
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            </button>
+              </button>
             <button
               type="button"
               onClick={onClose}

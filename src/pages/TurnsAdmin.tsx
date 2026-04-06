@@ -25,12 +25,55 @@ export function TurnsAdmin() {
   const [success, setSuccess] = useState('')
   
   const [formData, setFormData] = useState({
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     startTime: '',
     endTime: '',
     maxCapacity: 10,
     status: 'active' as TurnStatus,
   })
+  const [errors, setErrors] = useState({
+    date: '',
+    startTime: '',
+    endTime: '',
+    maxCapacity: '',
+  })
+
+  const validateForm = (): boolean => {
+    const newErrors = {
+      date: '',
+      startTime: '',
+      endTime: '',
+      maxCapacity: '',
+    }
+    
+    if (!formData.date) newErrors.date = 'La fecha es requerida'
+    else {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const turnDate = new Date(formData.date)
+      if (turnDate < today) newErrors.date = 'La fecha no puede ser pasada'
+    }
+    
+    if (!formData.startTime) newErrors.startTime = 'La hora de inicio es requerida'
+    else if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(formData.startTime)) {
+      newErrors.startTime = 'Formato inválido (HH:MM)'
+    }
+    
+    if (!formData.endTime) newErrors.endTime = 'La hora de fin es requerida'
+    else if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(formData.endTime)) {
+      newErrors.endTime = 'Formato inválido (HH:MM)'
+    }
+    
+    if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
+      newErrors.endTime = 'La hora de inicio debe ser menor que la de fin'
+    }
+    
+    if (formData.maxCapacity < 1) newErrors.maxCapacity = 'La capacidad mínima es 1'
+    if (formData.maxCapacity > 50) newErrors.maxCapacity = 'La capacidad máxima es 50'
+    
+    setErrors(newErrors)
+    return Object.values(newErrors).every(error => !error)
+  }
 
   const resetForm = () => {
     setFormData({
@@ -43,6 +86,12 @@ export function TurnsAdmin() {
     setEditingTurn(null)
     setShowForm(false)
     setError('')
+    setErrors({
+      date: '',
+      startTime: '',
+      endTime: '',
+      maxCapacity: '',
+    })
   }
 
   const handleEdit = (turn: ITurn) => {
@@ -62,6 +111,11 @@ export function TurnsAdmin() {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    if (!validateForm()) {
+      setError('Por favor corrige los errores en el formulario')
+      return
+    }
 
     try {
       if (editingTurn) {
@@ -124,9 +178,6 @@ export function TurnsAdmin() {
         <div className="mb-12">
           <span className="text-primary-container font-black font-headline text-2xl tracking-tighter italic">SERVICENTRO</span>
           <div className="mt-8 flex items-center gap-3">
-            <div className="w-10 h-10 bg-surface-variant rounded-sm flex items-center justify-center border border-outline-variant/30">
-              <span className="material-symbols-outlined text-primary">admin_panel_settings</span>
-            </div>
             <div>
               <p className="font-headline font-bold text-xs uppercase tracking-widest text-white">OPERACIONES</p>
               <p className="text-[10px] text-white/40 uppercase">Terminal Principal</p>
@@ -136,11 +187,9 @@ export function TurnsAdmin() {
 
         <nav className="flex-1 space-y-2 pr-6">
           <Link to="/admin/reservations" className="flex items-center gap-4 px-4 py-3 text-white/60 hover:text-primary hover:bg-surface-container font-headline font-bold text-sm uppercase transition-colors group">
-            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
-            <span>Panel Control</span>
+            <span>Panel de Reservas</span>
           </Link>
           <div className="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container rounded-sm font-headline font-bold text-sm uppercase translate-x-1">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: 'FILL 1' }}>ev_station</span>
             <span>Gestión Turnos</span>
           </div>
         </nav>
@@ -153,12 +202,7 @@ export function TurnsAdmin() {
             NUEVO TURNO
           </button>
           <div className="pt-6 border-t border-outline-variant/20 space-y-1">
-            <button className="flex items-center gap-4 px-4 py-2 text-white/40 hover:text-secondary font-headline text-[10px] tracking-widest uppercase transition-colors w-full">
-              <span className="material-symbols-outlined text-sm">settings</span>
-              <span>Ajustes</span>
-            </button>
             <button onClick={logout} className="flex items-center gap-4 px-4 py-2 text-white/40 hover:text-secondary font-headline text-[10px] tracking-widest uppercase transition-colors w-full">
-              <span className="material-symbols-outlined text-sm">logout</span>
               <span>Cerrar Sesión</span>
             </button>
           </div>
@@ -197,10 +241,14 @@ export function TurnsAdmin() {
                     <input
                       type="date"
                       value={formData.date}
+                      min={new Date().toISOString().split('T')[0]}
                       onChange={e => setFormData({ ...formData, date: e.target.value })}
-                      className="input-field"
+                      className={`input-field ${errors.date ? 'border-error' : ''}`}
                       required
                     />
+                    {errors.date && (
+                      <p className="text-error text-xs mt-1">{errors.date}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block font-label text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Capacidad máxima</label>
@@ -210,9 +258,12 @@ export function TurnsAdmin() {
                       max={50}
                       value={formData.maxCapacity}
                       onChange={e => setFormData({ ...formData, maxCapacity: parseInt(e.target.value) || 1 })}
-                      className="input-field"
+                      className={`input-field ${errors.maxCapacity ? 'border-error' : ''}`}
                       required
                     />
+                    {errors.maxCapacity && (
+                      <p className="text-error text-xs mt-1">{errors.maxCapacity}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block font-label text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Hora inicio</label>
@@ -220,9 +271,12 @@ export function TurnsAdmin() {
                       type="time"
                       value={formData.startTime}
                       onChange={e => setFormData({ ...formData, startTime: e.target.value })}
-                      className="input-field"
+                      className={`input-field ${errors.startTime ? 'border-error' : ''}`}
                       required
                     />
+                    {errors.startTime && (
+                      <p className="text-error text-xs mt-1">{errors.startTime}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block font-label text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Hora fin</label>
@@ -230,9 +284,12 @@ export function TurnsAdmin() {
                       type="time"
                       value={formData.endTime}
                       onChange={e => setFormData({ ...formData, endTime: e.target.value })}
-                      className="input-field"
+                      className={`input-field ${errors.endTime ? 'border-error' : ''}`}
                       required
                     />
+                    {errors.endTime && (
+                      <p className="text-error text-xs mt-1">{errors.endTime}</p>
+                    )}
                   </div>
                   {editingTurn && (
                     <div>

@@ -7,9 +7,37 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  })
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  
+  const validateField = (field: 'email' | 'password', value: string): string => {
+    switch (field) {
+      case 'email':
+        if (!value.trim()) return 'El correo es requerido'
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Formato de correo inválido'
+        return ''
+        
+      case 'password':
+        if (!value) return 'La contraseña es requerida'
+        if (value.length < 6) return 'La contraseña debe tener al menos 6 caracteres'
+        return ''
+        
+      default:
+        return ''
+    }
+  }
+  
+  const handleChange = (field: 'email' | 'password', value: string) => {
+    if (field === 'email') setEmail(value)
+    if (field === 'password') setPassword(value)
+    const fieldError = validateField(field, value)
+    setErrors(prev => ({ ...prev, [field]: fieldError }))
+  }
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/admin/turns'
 
@@ -50,9 +78,6 @@ export function Login() {
           </div>
 
           <div className="bg-surface-container/60 backdrop-blur-xl border-l border-t border-outline-variant/20 p-8 md:p-10 shadow-[0_0_40px_-10px_rgba(255,231,146,0.15)] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2">
-              <span className="material-symbols-outlined text-primary/20 text-4xl">precision_manufacturing</span>
-            </div>
             <div className="absolute bottom-0 left-0 w-1 h-12 bg-primary"></div>
 
             <header className="mb-8">
@@ -73,17 +98,17 @@ export function Login() {
                 <label className="block font-headline text-[10px] font-bold text-primary uppercase tracking-widest mb-2 px-1" htmlFor="email">
                   Correo electrónico
                 </label>
-                <div className="relative">
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-lg">alternate_email</span>
-                  <input
+                <div className="relative"><input
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-field pl-8"
-                    placeholder="USUARIO@SERVICENTRO.CU"
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    className={`input-field pl-10 ${errors.email ? 'border-error' : ''}`}
                     required
                   />
+                  {errors.email && (
+                    <p className="text-error text-xs mt-1">{errors.email}</p>
+                  )}
                 </div>
               </div>
 
@@ -91,29 +116,28 @@ export function Login() {
                 <label className="block font-headline text-[10px] font-bold text-primary uppercase tracking-widest mb-2 px-1" htmlFor="password">
                   Contraseña
                 </label>
-                <div className="relative">
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-lg">lock</span>
-                  <input
+                <div className="relative"><input
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-field pl-8"
-                    placeholder="••••••••"
+                    onChange={(e) => handleChange('password', e.target.value)}
+                    className={`input-field pl-10 ${errors.password ? 'border-error' : ''}`}
                     required
                   />
+                  {errors.password && (
+                    <p className="text-error text-xs mt-1">{errors.password}</p>
+                  )}
                 </div>
               </div>
 
               <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="metallic-shine text-on-primary-container font-headline font-black italic py-5 tracking-tighter text-lg uppercase transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 w-full disabled:opacity-50"
-                >
-                  <span>{loading ? 'Autenticando...' : 'ACCEDER AL PANEL'}</span>
-                  <span className="material-symbols-outlined">bolt</span>
-                </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="metallic-shine text-on-primary-container font-headline font-black italic py-5 tracking-tighter text-lg uppercase transition-all duration-200 active:scale-95 w-full disabled:opacity-50"
+                  >
+                    {loading ? 'Autenticando...' : 'ACCEDER AL PANEL'}
+                  </button>
               </div>
             </form>
 

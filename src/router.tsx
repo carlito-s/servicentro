@@ -1,7 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { PublicLayout } from '@/layouts/PublicLayout'
-import { AdminLayout } from '@/layouts/AdminLayout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Login } from '@/pages/Login'
 import { TurnsAdmin } from '@/pages/TurnsAdmin'
@@ -25,7 +24,9 @@ export default function AppRouter() {
             path="/admin"
             element={
               <ProtectedRoute>
-                <AdminLayout />
+                <div className="min-h-screen bg-surface-dim">
+                  <Outlet />
+                </div>
               </ProtectedRoute>
             }
           >

@@ -19,6 +19,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!getInitialUser())
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    // Validación de formato email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false
+    
+    // Validación de contraseña (mínimo 6 caracteres)
+    if (password.length < 6) return false
+    
     const storedUser = localStorage.getItem('admin_user')
     const admin = storedUser ? JSON.parse(storedUser) : { email: 'admin@servicentro.cu', password: 'admin123' }
     

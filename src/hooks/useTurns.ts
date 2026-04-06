@@ -17,6 +17,17 @@ function validateTurnData(turn: Omit<ITurn, 'id'>): string | null {
   if (turn.startTime >= turn.endTime) return 'La hora de inicio debe ser menor que la de fin'
   if (turn.maxCapacity < 1) return 'La capacidad mínima es 1'
   if (turn.maxCapacity > 50) return 'La capacidad máxima es 50'
+  
+  // Validación de fecha no pasada
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const turnDate = new Date(turn.date)
+  if (turnDate < today) return 'La fecha no puede ser pasada'
+  
+  // Validación de formato hora (HH:MM)
+  if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(turn.startTime)) return 'Formato de hora de inicio inválido (HH:MM)'
+  if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(turn.endTime)) return 'Formato de hora de fin inválido (HH:MM)'
+  
   return null
 }
 

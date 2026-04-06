@@ -16,6 +16,18 @@ function validateReservationData(data: ReservationInput): string | null {
   if (!data.clientName.trim()) return 'El nombre es requerido'
   if (!data.idCard.trim()) return 'El carné es requerido'
   if (!data.turnId) return 'El turno es requerido'
+  
+  // Validación de nombre completo
+  const nameTrimmed = data.clientName.trim()
+  if (nameTrimmed.length < 3) return 'El nombre debe tener al menos 3 caracteres'
+  if (nameTrimmed.length > 100) return 'El nombre no puede exceder 100 caracteres'
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.]+$/.test(nameTrimmed)) return 'El nombre solo puede contener letras, espacios, acentos y puntos'
+  
+  // Validación de carné de identidad (formato cubano: 11 dígitos)
+  const idCardTrimmed = data.idCard.trim()
+  if (!/^\d{11}$/.test(idCardTrimmed)) return 'El carné debe tener exactamente 11 dígitos'
+  if (idCardTrimmed === '00000000000') return 'El carné no puede ser todo ceros'
+  
   return null
 }
 
